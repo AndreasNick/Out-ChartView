@@ -1,7 +1,11 @@
+
+
 # PSUGH 05-2017
 # Andreas Nick PowerShell, WPF und Charts 
 
 Import-Module $($PSScriptRoot +'\WPFChart') -Force
+
+
 
 break
 
@@ -24,7 +28,7 @@ Get-childItem C:\windows | Where-Object {$_.length -gt 1} | Sort-Object -Propert
 
 
 #Process - >CPU Total
-get-process | Sort-Objectt CPU -Descending | Select-Object -first 10 |  Out-ChartView -xAxisPropertie Name -yAxisPropertie cpu  -Background "Green" -ChartArt AreaSeries -Foreground "white"
+get-process | Sort-Object CPU -Descending | Select-Object -first 10 |  Out-ChartView -xAxisPropertie Name -yAxisPropertie cpu  -Background "Green" -ChartArt AreaSeries -Foreground "white"
 
 
 #CPU Usage
