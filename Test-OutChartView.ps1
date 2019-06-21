@@ -5,8 +5,6 @@
 
 Import-Module $($PSScriptRoot +'\WPFChart') -Force
 
-
-
 break
 
 # Select 5 high cpu processes
@@ -42,5 +40,4 @@ get-WmiObject Win32_PerfFormattedData_PerfProc_Process `
 
 
 get-WmiObject Win32_PerfFormattedData_PerfProc_Process | Sort-Object -Property PercentProcessorTime -Descending | select -first 10 |  Select-Object -Property Name, PercentProcessorTime
-
 #>

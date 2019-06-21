@@ -24,63 +24,24 @@ Add-Type -Assembly System.IO.Compression.Filesystem
     Example of how to use this cmdlet
 #>
 
-function Install-Lib
-{
-  [CmdletBinding()]
-  Param
-  (
-    # Param1 help description
-    [Parameter(Mandatory = $true,
-           ValueFromPipelineByPropertyName = $true, Position = 0)]
-    $sourceFile,
-    [Parameter(Mandatory = $true, Position = 1)]
-    [System.IO.DirectoryInfo]$destFolder
-  )
-	
-  Process
-  {
-		
-    $zip = [System.IO.Compression.ZipFile]::OpenRead($sourceFile)
-    $Files = $zip.Entries | Where-Object { $_.Name -like '*.dll' }
-		
-    Foreach ($file in $Files)
-    {
-      $filename = [string]$file.name
-      Write-Host $("Extract " + $filename) -ForegroundColor yellow
-      $destfile = $destFolder.FullName + '\' + $filename
-      write-host $destfile
-      [IO.Compression.ZipFileExtensions]::ExtractToFile($file, $destfile, $true)
-    }
-    $zip.Dispose()
-  }
-}
-
 #Download Nuget DLL Files
-$dataVisualization = "$PSScriptRoot" + "\System.Windows.Controls.DataVisualization.Toolkit.dll"
-$wpfToolkit = "$PSScriptRoot" + "\WPFToolkit.dll"
+$dataVisualization = "$PSScriptRoot" + "\lib\System.Windows.Controls.DataVisualization.Toolkit.dll"
+$wpfToolkit = "$PSScriptRoot" + "\lib\WPFToolkit.dll"
 
 if (! (Test-path $dataVisualization))
 {
-  Write-Host "Missing: $dataVisualization try to download" -ForegroundColor Yellow
-  Invoke-WebRequest -Uri "https://www.nuget.org/api/v2/package/WPFToolkit.DataVisualization/3.5.50211.1" -OutFile "$dataVisualization.zip"
-  Install-Lib -sourceFile "$dataVisualization.zip" -destFolder (split-path $dataVisualization -Parent)
-  Remove-Item -Path ('{0}.zip' -f $dataVisualization) -ErrorAction SilentlyContinue
-	
+  Write-Error "Missing Lib $dataVisualization please reinstall the Module"
+  throw "Missing Lib $dataVisualization please reinstall the Module"
 }
 
 if (! (Test-path $wpfToolkit))
 {
-	
-  Write-Host "Missing: $dataVisualization try to download" -ForegroundColor Yellow
-  Invoke-WebRequest -Uri "https://www.nuget.org/api/v2/package/WPFToolkit/3.5.50211.1" -OutFile "$wpfToolkit.zip"
-  Install-Lib -sourceFile "$wpfToolkit.zip" -destFolder (split-path $wpfToolkit -Parent)
-  Remove-Item -Path ('{0}.zip' -f $wpfToolkit) -ErrorAction SilentlyContinue
+  Write-Error "Missing Lib $wpfToolkit please reinstall the Module"
+  throw "Missing Lib $wpfToolkit please reinstall the Module"
 }
-
 
 Add-Type -Path $dataVisualization
 Add-Type -Path $wpfToolkit
-
 
 <#
     .Synopsis
@@ -230,8 +191,6 @@ function Remove-WpfChartBorders
            ValueFromPipeline = $true,
            Position = 0)]
     [psobject]$Chart
-		
-		
   )
 	
   begin
@@ -440,8 +399,6 @@ function Set-ChartyAxis
   $yachse.Visibility = $IsVisiable
   $Chart.Axes.Add($yachse)
 }
-
-
 
 <#
     .Synopsis
@@ -720,9 +677,6 @@ function Add-WPFCart
   $ChartStyle.Setters.Add((New-object  System.Windows.Setter ([System.Windows.Controls.Border]::BorderThicknessProperty, [System.Windows.Thickness] "1.0")))
   $ChartStyle.Setters.Add((New-object  System.Windows.Setter ([System.Windows.Controls.Border]::PaddingProperty, [System.Windows.Thickness] "10.0")))
 	
-	
-	
-	
   #$ChartStyle = new-object System.Windows.style
   #$templateChart = new-object System.Windows.Controls.ControlTemplate  -ArgumentList (New-Object System.Windows.Controls.DataVisualization.Charting.Chart).GetType()
 	
@@ -761,22 +715,48 @@ function Add-WPFCart
   $WPFElement.addChild($Chart)
   return $Chart
   #}
-	
-	
-}
-
+	}
 
 
 <#
-    .Synopsis
-    Create a output for x,y data like a Graph
-    .DESCRIPTION
-    Long description
-    PARAMETER
-    DisableLegende Don't show the lenged 
-    .EXAMPLE
-    Another example of how to use this cmdlet
+.SYNOPSIS
+Create a output for x,y data like a Graph
+
+.DESCRIPTION
+Create a output for x,y data like a Graph
+
+.PARAMETER input
+Input form Pipe
+
+.PARAMETER xAxisPropertie
+Name of the position parameter @{Name=, Length=}
+
+.PARAMETER yAxisPropertie
+Name of the position parameter @{Name=, Length=}
+
+.PARAMETER Background
+Background color
+
+.PARAMETER Foreground
+Foreground color
+
+.PARAMETER Linecolor
+Line color
+
+.PARAMETER ChartArt
+Chart type 'PieSeries', 'ColumnSeries', 'AreaSeries', 'LineSeries'
+
+.PARAMETER DisableLegende
+Disable the Legend field
+
+.EXAMPLE
+Get-childItem C:\windows | Where-Object {$_.length -gt 1} | Sort-Object -Property length -Descending | Select-Object -first 10  | `
+    Out-ChartView -xAxisPropertie "Name" -yAxisPropertie "Length"  -Background "Green" -ChartArt ColumnSeries
+
+.NOTES
+Andreas Nick 2017, ww.software-virtualisierung.de
 #>
+
 function Out-ChartView
 {
   [CmdletBinding()]
@@ -800,7 +780,7 @@ function Out-ChartView
     [Parameter(Mandatory = $false)]
     [ValidateSet('PieSeries', 'ColumnSeries', 'AreaSeries', 'LineSeries')]
     $ChartArt = 'LineSeries',
-    [Switch]$DisableLegende = $true
+    [Switch] $DisableLegende = $true
   )
 	
   Begin
@@ -827,9 +807,7 @@ function Out-ChartView
   }
   End
   {
-		
     $chartdata | Add-WPFChartData -Chart $Chart -xAxisPropertie $xAxisPropertie -yAxisPropertie $yAxisPropertie -ChartArt $ChartArt -Foreground $Foreground -LineColor $Linecolor
- 
     Show-WPFWindow -Window $mainWindow
   }
 }
