@@ -1,7 +1,4 @@
-﻿<#                       #>
-
-
-Add-Type -assemblyName PresentationFramework
+﻿Add-Type -assemblyName PresentationFramework
 Add-Type -assemblyName PresentationCore
 Add-Type -assemblyName WindowsBase
 Add-Type -Assembly System.IO.Compression.Filesystem
@@ -12,7 +9,6 @@ Add-Type -Assembly System.IO.Compression.Filesystem
     .EXAMPLE
     Example of how to use this cmdlet
 #>
-
 
 function  Install-Lib
 {
@@ -45,8 +41,8 @@ function  Install-Lib
 }
 
 #Download Nuget DLL Files
-$dataVisualization = "$PSScriptRoot" +"\System.Windows.Controls.DataVisualization.Toolkit.dll"
-$wpfToolkit = "$PSScriptRoot"  +"\WPFToolkit.dll"
+$dataVisualization = "$PSScriptRoot" +"\lib\System.Windows.Controls.DataVisualization.Toolkit.dll"
+$wpfToolkit = "$PSScriptRoot"  +"\lib\WPFToolkit.dll"
 
 if(! (Test-path $dataVisualization)){
   Write-Host "Missing: $dataVisualization try to download" -ForegroundColor Yellow
