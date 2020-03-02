@@ -5,7 +5,7 @@
 
 Import-Module $($PSScriptRoot +'\WPFChart') -Force
 
-break
+break 
 
 # Select 5 high cpu processes
 get-process | Where-Object { $_.cpu -ne $null } | Sort-Object -Property cpu -Descending | Select-Object -first 10 | Out-ChartView -xAxisPropertie Name -yAxisPropertie cpu -Background "Green" -ChartArt ColumnSeries -Foreground "white" -Linecolor "white"
